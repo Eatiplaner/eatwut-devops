@@ -1,0 +1,8 @@
+source: Eatiplan-Project/eatiplan-grpc-proto
+branch: main
+outpb: app/grpc/pb
+token_key: GH_PROTO_REPO_TOKEN
+dependencies:
+  - auth/jwt
+  - user/register
+command: protoc $outpb/$dependency.proto --go_out=plugins=grpc:.
