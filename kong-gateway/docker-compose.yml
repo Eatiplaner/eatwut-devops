@@ -34,6 +34,14 @@ services:
       - kong-net
     restart: on-failure
 
+  zipkin:
+    image: openzipkin/zipkin:2
+    networks:
+      - kong-net
+    ports:
+      - "9411:9411"
+    restart: on-failure
+
   kong:
     image: kong:latest
     environment:
@@ -56,6 +64,8 @@ services:
       - $KONG_PROXY_SSL_PORT:8443
       - $KONG_PROXY_ADMIN_API_PORT:8001
       - $KONG_PROXY_ADMIN_SSL_API_PORT:8444
+    depends_on:
+      - zipkin
     networks:
       - kong-net
 
