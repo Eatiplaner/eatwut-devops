@@ -1,1 +1,3 @@
 kong-gateway/.env
+monitoring/**/.env
+kafka/.env
