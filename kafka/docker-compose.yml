@@ -38,7 +38,6 @@ services:
 
   zk1:
     image: confluentinc/cp-zookeeper:${CONFLUENT_VERSION}
-    hostname: zk1
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -49,29 +48,32 @@ services:
     volumes:
       - ./full-stack/zk1/data:/data
       - ./full-stack/zk1/datalog:/datalog
-    container_name: zookeeper1
+    container_name: zk1
 
   kafka1:
     image: confluentinc/cp-kafka:${CONFLUENT_VERSION}
     hostname: kafka1
-    container_name: kafka1
     ports:
       - "9092:9092"
-    expose:
-      - "29092"
+      - "9991:9991"
+
+    container_name: kafka101
     environment:
-      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:29092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
-      KAFKA_ZOOKEEPER_CONNECT: "zk1:2181"
-      KAFKA_BROKER_ID: 1
-      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
-      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
-    volumes:
-      - ./full-stack/kafka1/data:/var/lib/kafka/data
-    depends_on:
-      - zk1
+      KAFKA_BROKER_ID: 101
+      KAFKA_JMX_PORT: 9991
+      KAFKA_ZOOKEEPER_CONNECT: zk1:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka101:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka101:29092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zk1:2181
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: "false"
+      KAFKA_HEAP_OPTS: ${KAFKA_BROKER_HEAP_OPTS}
+    mem_limit: ${KAFKA_BROKER_MEM_LIMIT}
 
   kafka-schema-registry:
     image: confluentinc/cp-schema-registry:${CONFLUENT_VERSION}
@@ -79,7 +81,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: LISTENER_DOCKER_INTERNAL://kafka1:29092
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka101:29092
       SCHEMA_REGISTRY_HOST_NAME: kafka-schema-registry
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
       SCHEMA_REGISTRY_OPTS: ${SCHEMA_REGISTRY_HEAP_OPTS}
@@ -95,10 +97,10 @@ services:
       - "8080:8080"
     restart: always
     environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_SCHEMAREGISTRY=http://kafka-schema-registry:8081
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka1:29092
-      - KAFKA_CLUSTERS_0_ZOOKEEPER=zk1:2181
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: kafka-schema-registry:8081
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zk1:2181
     depends_on:
       - zk1
       - kafka1
