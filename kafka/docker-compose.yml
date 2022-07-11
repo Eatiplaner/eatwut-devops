@@ -46,6 +46,9 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 2
     ports:
       - "2181:2181"
+    volumes:
+      - ./full-stack/zk1/data:/data
+      - ./full-stack/zk1/datalog:/datalog
     container_name: zookeeper1
 
   kafka1:
@@ -65,6 +68,8 @@ services:
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
       KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    volumes:
+      - ./full-stack/kafka1/data:/var/lib/kafka/data
     depends_on:
       - zk1
 
@@ -91,7 +96,7 @@ services:
     restart: always
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_SCHEMAREGISTRY=kafka-schema-registry:8081
+      - KAFKA_CLUSTERS_0_SCHEMAREGISTRY=http://kafka-schema-registry:8081
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka1:29092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zk1:2181
     depends_on:

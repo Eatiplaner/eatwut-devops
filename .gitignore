@@ -1,3 +1,4 @@
 kong-gateway/.env
 monitoring/**/.env
 kafka/.env
+kafka/full-stack/*
