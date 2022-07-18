@@ -11,7 +11,7 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
-    restart: on-failure
+    restart: always
     stdin_open: true
     tty: true
     volumes:
@@ -32,7 +32,7 @@ services:
       - db
     networks:
       - kong-net
-    restart: on-failure
+    restart: always
 
   zipkin:
     image: openzipkin/zipkin:2
@@ -40,7 +40,7 @@ services:
       - kong-net
     ports:
       - "9411:9411"
-    restart: on-failure
+    restart: always
 
   kong:
     image: kong:latest
@@ -56,7 +56,7 @@ services:
       KONG_ADMIN_ERROR_LOG: ${KONG_ADMIN_ERROR_LOG}
       KONG_ADMIN_LISTEN: ${KONG_ADMIN_LISTEN}
       KONG_PROXY_LISTEN: ${KONG_PROXY_LISTEN}
-    restart: on-failure
+    restart: always
     ports:
       - $KONG_PROXY_HTTP2_PORT:9080
       - $KONG_PROXY_SSL_HTTP2_PORT:9081
@@ -81,7 +81,7 @@ services:
       DB_PASSWORD: ${KONGA_DB_PASSWORD}
       NODE_ENV: ${KONGA_ENV}
       KONGA_HOOK_TIMEOUT: 10000
-    restart: on-failure
+    restart: always
     ports:
       - $KONGA_PORT:1337
     depends_on:
