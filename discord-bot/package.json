@@ -1,0 +1,19 @@
+{
+  "name": "eatiplaner-discord-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "ascii-table": "^0.0.9",
+    "discord-api-types": "^0.36.3",
+    "discord.js": "^14.0.0",
+    "nodemon": "^2.0.19",
+    "token-types": "^5.0.0-alpha.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./index.js "
+  },
+  "author": "Louis",
+  "license": "ISC"
+}
