@@ -33,7 +33,7 @@ function loadEvents(client) {
     }
   }
 
-  return console.log(table.toString(), "\n Loaded Commands. ")
+  return console.log(table.toString(), "\n Loaded Events. ")
 }
 
 module.exports = { loadEvents }
