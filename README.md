@@ -15,3 +15,8 @@ https://crunchify.com/how-to-install-boto3-and-set-amazon-keys-a-python-interfac
 ```bash
 ./scripts/aws/stop_all_servers.sh
 ```
+
+### Generate proto file
+```bash
+./scripts/proto/sync_proto.sh DEPENDENCY_FILE=./scripts/proto/protodep.yaml
+```
