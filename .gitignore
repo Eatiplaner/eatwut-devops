@@ -4,3 +4,4 @@ kafka/.env
 kafka/full-stack/*
 discord-bot/node_modules
 discord-bot/config.json
+.env
