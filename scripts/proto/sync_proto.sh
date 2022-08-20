@@ -9,6 +9,15 @@ then
     echo "✅ yq installed"
 fi
 
+# Check if protobuf installed
+if ! command -v protobuf &> /dev/null
+then
+    echo "🙀 protobuf is not installed."
+    echo "Installing protobuf"
+    brew install protobuf
+    echo "✅ protobuf installed"
+fi
+
 # Get arguments
 for ARGUMENT in "$@"
 do
